@@ -2,6 +2,7 @@
 using StreamDeckLib.Messages;
 using System;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Fritz.StreamDeckDashboard
@@ -22,6 +23,16 @@ namespace Fritz.StreamDeckDashboard
 		}
 
 		private Stopwatch _ButtonHoldTimer;
+		private Process _UnitTestProcess;
+		private static readonly Regex _GetDigits = new Regex(@"(\d+)");
+
+		~UnitTestPlugin() {
+
+			if (_UnitTestProcess != null) _UnitTestProcess.Dispose();
+
+		}
+
+		private string _Context;
 
 		/**
 		 * 
@@ -77,19 +88,91 @@ namespace Fritz.StreamDeckDashboard
 		public override Task OnWillAppear(StreamDeckEventPayload args)
 		{
 
-			this.State = args.payload.settings.State;
+			this._Context = args.context;
+
+			this.State = (UnitTestButtonState)(args.payload.settings.State ?? UnitTestButtonState.NoTestsRunning);
 
 			return base.OnWillAppear(args);
 		}
 
 		private Task StartTests()
 		{
-			throw new NotImplementedException();
+
+			_UnitTestProcess = new Process()
+			{
+				StartInfo = new ProcessStartInfo
+				{
+					WorkingDirectory = @"c:\dev\StreamDeck_First\src\StreamDeckLib.Test",
+					UseShellExecute = false,
+					RedirectStandardOutput = true,
+					FileName = "dotnet",
+					Arguments = "watch test"
+				}
+			};
+
+
+			//_UnitTestProcess.WaitForExit();
+			_UnitTestProcess.Disposed += _UnitTestProcess_Disposed;
+			_UnitTestProcess.OutputDataReceived += _UnitTestProcess_OutputDataReceived;
+			_UnitTestProcess.ErrorDataReceived += _UnitTestProcess_ErrorDataReceived;
+			_UnitTestProcess.Exited += _UnitTestProcess_Exited;
+			_UnitTestProcess.Start();
+
+			_UnitTestProcess.BeginOutputReadLine();
+			State = UnitTestButtonState.TestsRunning;
+
+			return Task.CompletedTask;
+
+		}
+
+		private void _UnitTestProcess_Disposed(object sender, EventArgs e)
+		{
+			Debug.WriteLine("Process Disposed");
+		}
+
+		private void _UnitTestProcess_Exited(object sender, EventArgs e)
+		{
+			Debug.WriteLine("Process exited");
+		}
+
+		private void _UnitTestProcess_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+		{
+			Debug.WriteLine("Error: " + e.Data);
+		}
+
+		private void _UnitTestProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
+		{
+
+			if (e.Data.Contains("watch : Started")) {
+				State = UnitTestButtonState.TestsRunning;
+				Manager.SetImageAsync(_Context, "images/Test-Running.png");
+			} else if (e.Data.StartsWith("Total tests:")) {
+
+				SetButtonFromTestResults(e.Data);
+
+			}
+
+			Debug.WriteLine("Data: " + e.Data);
+		}
+
+		private void SetButtonFromTestResults(string data)
+		{
+			var results = _GetDigits.Matches(data);
+			var newTitle = $"Passed: {results[1].Value}\nFailed: {results[2].Value}";
+			Manager.SetTitleAsync(_Context, newTitle);
+
+			var newImage = results[2].Value == "0" && results[3].Value == "0" ? "images/Test-Successful.png" : results[2].Value == "0" ? "images/Test-Failed.png" : "images/Test-Warning.png";
+
+			Manager.SetImageAsync(_Context, newImage);
+
 		}
 
 		private Task StopTests()
 		{
-			throw new NotImplementedException();
+			_UnitTestProcess.Kill();
+			State = UnitTestButtonState.NoTestsRunning;
+			Manager.SetImageAsync(_Context, "images/UnitTest.png");
+			return Task.CompletedTask;
 		}
 
 	}
