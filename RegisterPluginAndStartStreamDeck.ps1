@@ -11,7 +11,7 @@ $destDir = $env:APPDATA + "\Elgato\StreamDeck\Plugins\" + $pluginID + ".sdPlugin
 
 $pluginName = split-path $PSScriptRoot -leaf
 
-Get-Process StreamDeck,$pluginName | Stop-Process –force -ErrorAction SilentlyContinue 
+Get-Process StreamDeck | Stop-Process –force -ErrorAction SilentlyContinue 
 
 Copy-Item -Path $bindir -Exclude '.vs' -Recurse -Destination $destDir -Force
 
