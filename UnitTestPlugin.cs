@@ -146,7 +146,9 @@ namespace Fritz.StreamDeckDashboard
 			if (e.Data.Contains("watch : Started")) {
 				State = UnitTestButtonState.TestsRunning;
 				Manager.SetImageAsync(_Context, "images/Test-Running.png");
-			} else if (e.Data.StartsWith("Total tests:")) {
+				Manager.SetTitleAsync(_Context, "");
+			}
+			else if (e.Data.StartsWith("Total tests:")) {
 
 				SetButtonFromTestResults(e.Data);
 
@@ -161,7 +163,7 @@ namespace Fritz.StreamDeckDashboard
 			var newTitle = $"Passed: {results[1].Value}\nFailed: {results[2].Value}";
 			Manager.SetTitleAsync(_Context, newTitle);
 
-			var newImage = results[2].Value == "0" && results[3].Value == "0" ? "images/Test-Successful.png" : results[2].Value == "0" ? "images/Test-Failed.png" : "images/Test-Warning.png";
+			var newImage = results[2].Value == "0" && results[3].Value == "0" ? "images/Test-Successful.png" : results[2].Value != "0" ? "images/Test-Failed.png" : "images/Test-Warning.png";
 
 			Manager.SetImageAsync(_Context, newImage);
 
@@ -171,6 +173,7 @@ namespace Fritz.StreamDeckDashboard
 		{
 			_UnitTestProcess.Kill();
 			State = UnitTestButtonState.NoTestsRunning;
+			Manager.SetTitleAsync(_Context, "");
 			Manager.SetImageAsync(_Context, "images/UnitTest.png");
 			return Task.CompletedTask;
 		}
