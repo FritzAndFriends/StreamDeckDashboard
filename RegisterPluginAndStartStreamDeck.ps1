@@ -13,8 +13,7 @@ $pluginName = split-path $PSScriptRoot -leaf
 
 Get-Process StreamDeck,$pluginName | Stop-Process –force -ErrorAction SilentlyContinue 
 
-mkdir $destDir -ErrorAction SilentlyContinue
-Get-ChildItem -Path $bindir -Recurse | ? { $_.FullName -inotmatch '.vs' } | Copy-Item -Destination $destDir
+Copy-Item -Path $bindir -Exclude '.vs' -Recurse -Destination $destDir -Force
 
 Write-Host "Script Completed"
 
