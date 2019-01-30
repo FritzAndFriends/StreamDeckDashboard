@@ -1,0 +1,5 @@
+﻿checked by David from the Noun Project
+Test Passed by Anil from the Noun Project
+failed by Kirby Wu from the Noun Project
+Running by Miguel C Balandrano from the Noun Project
+Warning by DewDrops from the Noun Project

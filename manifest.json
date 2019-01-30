@@ -1,0 +1,36 @@
+{
+  "Actions": [
+		{
+			"Icon": "images/UnitTest",
+			"Name": ".NET Core Unit Test",
+			"States": [
+				{
+					"Image": "images/UnitTest",
+					"TitleAlignment": "middle",
+					"FontSize": "16"
+				}
+			],
+			"SupportedInMultiActions": false,
+			"Tooltip": "Run and monitor unit tests for a project",
+			"UUID": "com.csharpfritz.plugin.unittest"
+		}
+  ], 
+  "Author": "Fritz and Friends",
+	"CodePathWin": "Fritz.StreamDeckDashboard.exe", 
+	"CodePathMac":  "Fritz.StreamDeckDashboard",
+  "Description": "A collection of actions that will make .NET Developers more productive", 
+  "Name": "Developer Auxiliary Dashboard", 
+  "Icon": "pluginIcon", 
+  "URL": "https://www.elgato.com/gaming/stream-deck", 
+  "Version": "0.2",
+  "OS": [
+    {
+        "Platform": "mac", 
+        "MinimumVersion" : "10.11"
+    },
+    {
+        "Platform": "windows", 
+        "MinimumVersion" : "10"
+    }
+  ]
+}
