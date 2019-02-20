@@ -31,6 +31,8 @@
       <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2" />
       <PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
 		 <PackageReference Include="Serilog.Settings.Configuration" Version="3.0.1" />
+		 <PackageReference Include="StreamDeckLib" Version="0.3.440" />
+		 <PackageReference Include="StreamDeckLib.Config" Version="0.3.446" />
 		 <PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
    </ItemGroup>
    <ItemGroup>
@@ -70,12 +72,6 @@
       <Content Include="Fritz.StreamDeckDashboard.cmd">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
-      <Reference Include="StreamDeckLib">
-        <HintPath>..\..\..\StreamDeck_First\src\StreamDeckLib\bin\Debug\netstandard2.0\StreamDeckLib.dll</HintPath>
-      </Reference>
-      <Reference Include="StreamDeckLib.Config">
-        <HintPath>..\..\..\StreamDeck_First\src\StreamDeckLib.Config\bin\Debug\netcoreapp2.1\StreamDeckLib.Config.dll</HintPath>
-      </Reference>
       <Content Update="actionDefaultImage%402x.png">
          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
