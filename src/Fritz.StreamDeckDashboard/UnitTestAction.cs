@@ -1,4 +1,5 @@
-﻿using StreamDeckLib;
+﻿using Microsoft.Extensions.Logging;
+using StreamDeckLib;
 using StreamDeckLib.Messages;
 using System;
 using System.Diagnostics;
@@ -7,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace Fritz.StreamDeckDashboard
 {
-	internal class UnitTestPlugin : BaseStreamDeckPlugin
+	internal class UnitTestAction : BaseStreamDeckAction
 	{
 
 		// Cheer 100 Auth0bobby  January 29, 2019
 		// Cheer 100 roberttables  January 29, 2019
 		// Cheer 100 cpayette  January 29, 2019
+		// Cheer 100 devlead 19/2/19 
 
 		public enum UnitTestButtonState {
 			NoTestsRunning,
@@ -26,7 +28,7 @@ namespace Fritz.StreamDeckDashboard
 		private Process _UnitTestProcess;
 		private static readonly Regex _GetDigits = new Regex(@"(\d+)");
 
-		~UnitTestPlugin() {
+		~UnitTestAction() {
 
 			if (_UnitTestProcess != null) _UnitTestProcess.Dispose();
 
@@ -45,8 +47,12 @@ namespace Fritz.StreamDeckDashboard
 
 		public UnitTestButtonState State { get; set; }
 
+		public override string UUID => "com.csharpfritz.plugin.unittest.action";
+
 		public override async Task OnKeyUp(StreamDeckEventPayload args)
 		{
+
+			// TODO: Clean up stopwatch
 
 			if (State != UnitTestButtonState.NoTestsRunning && _ButtonHoldTimer.Elapsed.TotalSeconds > 2)
 			{
@@ -102,7 +108,7 @@ namespace Fritz.StreamDeckDashboard
 			{
 				StartInfo = new ProcessStartInfo
 				{
-					WorkingDirectory = @"c:\dev\StreamDeck_First\src\StreamDeckLib.Test",
+					WorkingDirectory = @"C:\dev\Fritz.StreamDeckDashboard\Test",
 					UseShellExecute = false,
 					RedirectStandardOutput = true,
 					FileName = "dotnet",
@@ -116,6 +122,9 @@ namespace Fritz.StreamDeckDashboard
 			_UnitTestProcess.OutputDataReceived += _UnitTestProcess_OutputDataReceived;
 			_UnitTestProcess.ErrorDataReceived += _UnitTestProcess_ErrorDataReceived;
 			_UnitTestProcess.Exited += _UnitTestProcess_Exited;
+
+			Logger.LogDebug("Beginning Unit Tests");
+
 			_UnitTestProcess.Start();
 
 			_UnitTestProcess.BeginOutputReadLine();
@@ -143,9 +152,11 @@ namespace Fritz.StreamDeckDashboard
 		private void _UnitTestProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
 		{
 
+			// Cheer 200 roberttables 19/2/19 
+
 			if (e.Data.Contains("watch : Started")) {
 				State = UnitTestButtonState.TestsRunning;
-				Manager.SetImageAsync(_Context, "images/Test-Running.png");
+				Manager.SetImageAsync(_Context, "images/TestRunning.png");
 				Manager.SetTitleAsync(_Context, "");
 			}
 			else if (e.Data.StartsWith("Total tests:")) {

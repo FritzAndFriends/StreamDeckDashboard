@@ -1,5 +1,5 @@
 {
-  "Actions": [
+	"Actions": [
 		{
 			"Icon": "images/UnitTest",
 			"Name": ".NET Core Unit Test",
@@ -7,16 +7,16 @@
 				{
 					"Image": "images/UnitTest",
 					"TitleAlignment": "middle",
-					"FontSize": "16"
+					"FontSize": "9"
 				}
 			],
 			"SupportedInMultiActions": false,
 			"Tooltip": "Run and monitor unit tests for a project",
-			"UUID": "com.csharpfritz.plugin.unittest"
+			"UUID": "com.csharpfritz.plugin.unittest.action"
 		}
-  ], 
+	], 
   "Author": "Fritz and Friends",
-	"CodePathWin": "Fritz.StreamDeckDashboard.exe", 
+	"CodePathWin": "Fritz.StreamDeckDashboard.cmd", 
 	"CodePathMac":  "Fritz.StreamDeckDashboard",
   "Description": "A collection of actions that will make .NET Developers more productive", 
   "Name": "Developer Auxiliary Dashboard", 
