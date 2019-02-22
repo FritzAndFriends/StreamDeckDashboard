@@ -14,23 +14,24 @@
 			"Tooltip": "Run and monitor unit tests for a project",
 			"UUID": "com.csharpfritz.plugin.unittest.action"
 		}
-	], 
-  "Author": "Fritz and Friends",
-	"CodePathWin": "Fritz.StreamDeckDashboard.cmd", 
-	"CodePathMac":  "Fritz.StreamDeckDashboard",
-  "Description": "A collection of actions that will make .NET Developers more productive", 
-  "Name": "Developer Auxiliary Dashboard", 
-  "Icon": "pluginIcon", 
-  "URL": "https://www.elgato.com/gaming/stream-deck", 
-  "Version": "0.2",
-  "OS": [
-    {
-        "Platform": "mac", 
-        "MinimumVersion" : "10.11"
-    },
-    {
-        "Platform": "windows", 
-        "MinimumVersion" : "10"
-    }
-  ]
+	],
+	"Author": "Fritz and Friends",
+	"CodePathWin": "Fritz.StreamDeckDashboard.cmd",
+	"CodePathMac": "Fritz.StreamDeckDashboard",
+	"Description": "A collection of actions that will make .NET Developers more productive",
+	"PropertyInspectorPath": "property_inspector/property_inspector.html",
+	"Name": "Developer Auxiliary Dashboard",
+	"Icon": "pluginIcon",
+	"URL": "https://www.elgato.com/gaming/stream-deck",
+	"Version": "0.2",
+	"OS": [
+		{
+			"Platform": "mac",
+			"MinimumVersion": "10.11"
+		},
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	]
 }

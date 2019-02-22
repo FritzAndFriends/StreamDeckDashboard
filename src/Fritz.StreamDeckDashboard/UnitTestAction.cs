@@ -3,8 +3,10 @@ using StreamDeckLib;
 using StreamDeckLib.Messages;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Fritz.StreamDeckDashboard
 {
@@ -35,6 +37,7 @@ namespace Fritz.StreamDeckDashboard
 		}
 
 		private string _Context;
+		private string _ProjectFileName;
 
 		/**
 		 * 
@@ -101,14 +104,27 @@ namespace Fritz.StreamDeckDashboard
 			return base.OnWillAppear(args);
 		}
 
+		public override Task OnPropertyInspectorMessageReceived(PropertyInspectorEventPayload args)
+		{
+
+			// Cheer 100 pharewings 22/2/19 
+			// Cheer 200 cpayette 22/2/19 
+
+			_ProjectFileName = HttpUtility.UrlDecode(args.GetPayloadValue<string>("test_project_file"));
+			return Task.CompletedTask;
+
+		}
+
 		private Task StartTests()
 		{
+
+			var projectFolder = new FileInfo(_ProjectFileName).DirectoryName;
 
 			_UnitTestProcess = new Process()
 			{
 				StartInfo = new ProcessStartInfo
 				{
-					WorkingDirectory = @"C:\dev\Fritz.StreamDeckDashboard\Test",
+					WorkingDirectory = projectFolder,
 					UseShellExecute = false,
 					RedirectStandardOutput = true,
 					FileName = "dotnet",
