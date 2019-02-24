@@ -19,20 +19,40 @@
 		<div class="sdpi-item" id="my_private_file_selector">
 			<div class="sdpi-item-label">Select File</div>
 			<div class="sdpi-item-group file" id="filepickergroup">
-				<input class="sdpi-item-value" type="file" id="elgfilepicker" accept=".csproj" onchange="sendValueToPlugin(event.target.value.replace(/^C:\\fakepath\\/, ''), 'test_project_file')" >
-				<label class="sdpi-file-info" for="elgfilepicker">no file...</label>
+				<input class="sdpi-item-value" type="file" id="elgfilepicker" accept=".csproj">
+				<label class="sdpi-file-info" for="elgfilepicker" id="fileLabel">no file...</label>
 				<label class="sdpi-file-label" for="elgfilepicker">Choose file...</label>
 			</div>
 		</div>
 
-		<!--
-		<div class="sdpi-item" id="starting_number">
-			<div class="sdpi-item-label">Starting Number</div>
-			<input class="sdpi-item-value" type="number" inputmode="numeric" pattern="[0-9]*" onchange="sendValueToPlugin(event.target.value, 'starting_number')" />
-		</div>
-		-->
-
 	</div>
 	<script src="js/property_inspector.js"></script>
+	<script type="text/javascript">
+
+		(function () {
+
+			var fileLabel = document.getElementById("fileLabel");
+
+			var fileSelectorClick = function () {
+
+				var name = decodeURIComponent(event.target.value.replace(/^C:\\fakepath\\/, ''));
+				alert(name);
+				fileLabel.innerText = name.replace(/^.*[\\\/]/, '');
+				sendValueToPlugin(name, 'test_project_file');
+
+			};
+			document.getElementById("elgfilepicker").addEventListener('change', fileSelectorClick);
+
+			websocket.onmessage = function (ev) {
+				alert("Message received: " + ev);
+				var name = JSON.parse(ev.data).payload.ProjectName;
+				fileLabel.innerText = name.replace(/^.*[\\\/]/, '');
+			}
+
+
+		}());
+
+
+	</script>
 </body>
 </html>

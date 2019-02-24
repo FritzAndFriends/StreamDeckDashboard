@@ -19,7 +19,8 @@ function connectSocket(inPort, inUUID, inRegisterEvent, inInfo, inActionInfo) {
 		// register property inspector to Stream Deck
 		websocket.send(JSON.stringify(json));
 		sendEventToPlugin('propertyInspectorConnected');
-  };
+	};
+
 }
 
 window.addEventListener('unload', function (event) {

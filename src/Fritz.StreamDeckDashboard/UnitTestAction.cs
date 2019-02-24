@@ -104,19 +104,34 @@ namespace Fritz.StreamDeckDashboard
 			return base.OnWillAppear(args);
 		}
 
+		public override Task OnPropertyInspectorConnected(PropertyInspectorEventPayload args)
+		{
+
+			Manager.SendToPropertyInspectorAsync(args.context, new { ProjectName = _ProjectFileName });
+
+			return base.OnPropertyInspectorConnected(args);
+		}
+
 		public override Task OnPropertyInspectorMessageReceived(PropertyInspectorEventPayload args)
 		{
 
 			// Cheer 100 pharewings 22/2/19 
 			// Cheer 200 cpayette 22/2/19 
+			// Cheer 900 cpayette 24/2/19 
+			// Cheer 100 gep13 24/2/19 
+			// Cheer 100 phrakberg 24/2/19 
+			// Cheer 100 lannonbr 24/2/19 
 
-			_ProjectFileName = HttpUtility.UrlDecode(args.GetPayloadValue<string>("test_project_file"));
+			_ProjectFileName = args.GetPayloadValue<string>("test_project_file");
 			return Task.CompletedTask;
 
 		}
 
 		private Task StartTests()
 		{
+
+			// Cheer 1000 themichaeljolley 24/2/19 
+			// Cheer 100 ElectricHavoc 24/2/19 
 
 			var projectFolder = new FileInfo(_ProjectFileName).DirectoryName;
 
