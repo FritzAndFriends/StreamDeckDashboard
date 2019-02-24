@@ -10,6 +10,8 @@ using System.Web;
 
 namespace Fritz.StreamDeckDashboard
 {
+	
+	[ActionUuid("com.csharpfritz.plugin.unittest.action")]
 	internal class UnitTestAction : BaseStreamDeckAction
 	{
 
@@ -32,6 +34,8 @@ namespace Fritz.StreamDeckDashboard
 
 		~UnitTestAction() {
 
+			Logger.LogDebug("Disposing the Unit Test Action");
+
 			if (_UnitTestProcess != null) _UnitTestProcess.Dispose();
 
 		}
@@ -50,19 +54,18 @@ namespace Fritz.StreamDeckDashboard
 
 		public UnitTestButtonState State { get; set; }
 
-		public override string UUID => "com.csharpfritz.plugin.unittest.action";
-
 		public override async Task OnKeyUp(StreamDeckEventPayload args)
 		{
 
-			// TODO: Clean up stopwatch
+			var ellapsedSeconds = _ButtonHoldTimer != null ? _ButtonHoldTimer.Elapsed.TotalSeconds : 0;
+			_ButtonHoldTimer?.Reset();
 
-			if (State != UnitTestButtonState.NoTestsRunning && _ButtonHoldTimer.Elapsed.TotalSeconds > 2)
+			if (State != UnitTestButtonState.NoTestsRunning && ellapsedSeconds > 2)
 			{
 				await StopTests();
 				return;
 			} else if (State == UnitTestButtonState.NoTestsRunning) {
-				await StartTests();
+				await StartTests(args);
 				return;
 			}
 
@@ -73,7 +76,9 @@ namespace Fritz.StreamDeckDashboard
 
 		public override Task OnKeyDown(StreamDeckEventPayload args)
 		{
-			
+
+			Logger.LogInformation($"Unit test pressed: context({args.context})");
+
 			if (State != UnitTestButtonState.NoTestsRunning) {
 				_ButtonHoldTimer = Stopwatch.StartNew();
 			}
@@ -122,16 +127,19 @@ namespace Fritz.StreamDeckDashboard
 			// Cheer 100 phrakberg 24/2/19 
 			// Cheer 100 lannonbr 24/2/19 
 
-			_ProjectFileName = args.GetPayloadValue<string>("test_project_file");
+			_ProjectFileName = args.GetSettingsPayloadValue<string>("test_project_file");
 			return Task.CompletedTask;
 
 		}
 
-		private Task StartTests()
+		private Task StartTests(StreamDeckEventPayload args)
 		{
 
 			// Cheer 1000 themichaeljolley 24/2/19 
 			// Cheer 100 ElectricHavoc 24/2/19 
+
+			if (string.IsNullOrEmpty(_ProjectFileName)) Manager.ShowAlertAsync(args.context);
+
 
 			var projectFolder = new FileInfo(_ProjectFileName).DirectoryName;
 
