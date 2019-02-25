@@ -36,16 +36,14 @@
 			var fileSelectorClick = function () {
 
 				var name = decodeURIComponent(event.target.value.replace(/^C:\\fakepath\\/, ''));
-				alert(name);
 				fileLabel.innerText = name.replace(/^.*[\\\/]/, '');
 				sendValueToPlugin(name, 'test_project_file');
 
 			};
 			document.getElementById("elgfilepicker").addEventListener('change', fileSelectorClick);
 
-			websocket.onmessage = function (ev) {
-				alert("Message received: " + ev);
-				var name = JSON.parse(ev.data).payload.ProjectName;
+			onmessage = function (ev) {
+				var name = JSON.parse(ev.data).payload.settingsModel.ProjectName;
 				fileLabel.innerText = name.replace(/^.*[\\\/]/, '');
 			}
 

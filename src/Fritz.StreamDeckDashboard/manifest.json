@@ -10,6 +10,7 @@
 					"FontSize": "9"
 				}
 			],
+			"PropertyInspectorPath": "property_inspector/unittest.html",
 			"SupportedInMultiActions": false,
 			"Tooltip": "Run and monitor unit tests for a project",
 			"UUID": "com.csharpfritz.plugin.unittest.action"
@@ -19,7 +20,6 @@
 	"CodePathWin": "Fritz.StreamDeckDashboard.cmd",
 	"CodePathMac": "Fritz.StreamDeckDashboard",
 	"Description": "A collection of actions that will make .NET Developers more productive",
-	"PropertyInspectorPath": "property_inspector/property_inspector.html",
 	"Name": "Developer Auxiliary Dashboard",
 	"Icon": "pluginIcon",
 	"URL": "https://www.elgato.com/gaming/stream-deck",

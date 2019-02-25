@@ -90,12 +90,15 @@ namespace Fritz.StreamDeckDashboard
 		public override async Task OnWillDisappear(StreamDeckEventPayload args)
 		{
 
-			var currentState = new
-			{
-				State = (int)(this.State)
-			};
+			// These values persist with the class scope fields
 
-			await this.Manager.SetSettingsAsync(args.context, currentState);
+			//var currentState = new UnitTestSettings
+			//{
+			//	State = this.State,
+			//	ProjectFileName = _ProjectFileName
+			//};
+
+			//await this.Manager.SetSettingsAsync(args.context, currentState);
 
 		}
 
@@ -104,7 +107,8 @@ namespace Fritz.StreamDeckDashboard
 
 			this._Context = args.context;
 
-			this.State = (UnitTestButtonState)(args.payload.settings.State ?? UnitTestButtonState.NoTestsRunning);
+			//this.State = args.GetPayloadSettingsValue<UnitTestButtonState>("State");
+			//this._ProjectFileName = args.GetPayloadSettingsValue<string>("ProjectFileName");
 
 			return base.OnWillAppear(args);
 		}
@@ -226,6 +230,14 @@ namespace Fritz.StreamDeckDashboard
 			Manager.SetTitleAsync(_Context, "");
 			Manager.SetImageAsync(_Context, "images/UnitTest.png");
 			return Task.CompletedTask;
+		}
+
+		public class UnitTestSettings {
+
+			public UnitTestButtonState State { get; set; }
+
+			public string ProjectFileName { get; set; }
+
 		}
 
 	}

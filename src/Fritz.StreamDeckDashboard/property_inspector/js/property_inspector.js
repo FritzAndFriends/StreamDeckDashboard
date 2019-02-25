@@ -3,7 +3,8 @@
 var websocket = null,
   uuid = null,
   inInfo = null,
-  actionInfo = {},
+	actionInfo = {},
+	onmessage = null,
   settingsModel = {
 		counter: 0
   };
@@ -11,10 +12,13 @@ var websocket = null,
 function connectSocket(inPort, inUUID, inRegisterEvent, inInfo, inActionInfo) {
   uuid = inUUID;
   actionInfo = JSON.parse(inActionInfo);
-  inInfo = JSON.parse(inInfo);
+	inInfo = JSON.parse(inInfo);
   websocket = new WebSocket('ws://localhost:' + inPort);
 
-  websocket.onopen = function () {
+	websocket.onopen = function () {
+
+		if (onmessage) websocket.onmessage = onmessage;
+
 		var json = { event: inRegisterEvent, uuid: inUUID };
 		// register property inspector to Stream Deck
 		websocket.send(JSON.stringify(json));
@@ -44,17 +48,18 @@ function sendValueToPlugin(value, param) {
 }
 
 function sendEventToPlugin(value) {
-  if (websocket) {
-	settingsModel[param] = value;
-	const json = {
-	  "action": actionInfo['action'],
-	  "event": "sendToPlugin",
-	  "context": uuid,
-	  "payload": {
-		  "property_inspector": value
-	  }
-	};
-	websocket.send(JSON.stringify(json));
+
+	if (websocket) {
+
+		const json = {
+			"action": actionInfo['action'],
+			"event": "sendToPlugin",
+			"context": uuid,
+			"payload": {
+				"property_inspector": value
+			}
+		};
+		websocket.send(JSON.stringify(json));
   }
 }
 

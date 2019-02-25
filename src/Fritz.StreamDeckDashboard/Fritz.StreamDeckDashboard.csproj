@@ -23,7 +23,7 @@
      <None Remove="property_inspector\css\property-inspector.css" />
      <None Remove="property_inspector\css\sdpi.css" />
      <None Remove="property_inspector\js\property_inspector.js" />
-     <None Remove="property_inspector\property_inspector.html" />
+     <None Remove="property_inspector\unittest.html" />
    </ItemGroup>
    <ItemGroup>
       <!--<PackageReference Include="StreamDeckLib" Version="0.3.440" />-->
@@ -80,7 +80,7 @@
       <Content Include="property_inspector\css\sdpi.css">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
-      <Content Include="property_inspector\property_inspector.html">
+      <Content Include="property_inspector\unittest.html">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
       <Content Include="property_inspector\js\property_inspector.js">
