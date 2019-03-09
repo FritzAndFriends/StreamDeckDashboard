@@ -37,15 +37,15 @@
 
 				var name = decodeURIComponent(event.target.value.replace(/^C:\\fakepath\\/, ''));
 				fileLabel.innerText = name.replace(/^.*[\\\/]/, '');
-				sendValueToPlugin(name, 'test_project_file');
+                sendValueToPlugin(name, 'ProjectFileName');
 
 			};
 			document.getElementById("elgfilepicker").addEventListener('change', fileSelectorClick);
 
-			onmessage = function (ev) {
-				var name = JSON.parse(ev.data).payload.settingsModel.ProjectName;
-				fileLabel.innerText = name.replace(/^.*[\\\/]/, '');
-			}
+			//onmessage = function (ev) {
+			//	var name = JSON.parse(ev.data).payload.settingsModel.ProjectName;
+			//	fileLabel.innerText = name.replace(/^.*[\\\/]/, '');
+			//}
 
 
 		}());
