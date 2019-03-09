@@ -41,7 +41,7 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
     };
 
     function receivedSettings(jsonObj) {
-       
+
         if (jsonObj.payload.settings.settingsModel.ProjectFileName) {
             var fileLabel = document.getElementById("fileLabel");
             var name = jsonObj.payload.settings.settingsModel.ProjectFileName;

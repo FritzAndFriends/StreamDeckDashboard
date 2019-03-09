@@ -1,56 +1,56 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8" />
-	<title>SamplePlugin Property Inspector</title>
-	<link rel="stylesheet" href="css/sdpi.css">
-	<link rel="stylesheet" href="css/property-inspector.css">
+    <meta charset="utf-8" />
+    <title>SamplePlugin Property Inspector</title>
+    <link rel="stylesheet" href="css/sdpi.css">
+    <link rel="stylesheet" href="css/property-inspector.css">
 </head>
 <body>
-	<div class="sdpi-wrapper">
-		<!-- for more examples of the types of fields supported in property inspector visit:
-			Elgato Github PiSamples -> https://github.com/elgatosf/streamdeck-pisamples
-			and
-			Elgato SDK Documentation -> https://developer.elgato.com/documentation/stream-deck/sdk/property-inspector/
-	-->
+    <div class="sdpi-wrapper">
+        <!-- for more examples of the types of fields supported in property inspector visit:
+                Elgato Github PiSamples -> https://github.com/elgatosf/streamdeck-pisamples
+                and
+                Elgato SDK Documentation -> https://developer.elgato.com/documentation/stream-deck/sdk/property-inspector/
+        -->
 
-		<div class="sdpi-heading">FILE</div>
+        <div class="sdpi-heading">FILE</div>
 
-		<div class="sdpi-item" id="my_private_file_selector">
-			<div class="sdpi-item-label">Select File</div>
-			<div class="sdpi-item-group file" id="filepickergroup">
-				<input class="sdpi-item-value" type="file" id="elgfilepicker" accept=".csproj">
-				<label class="sdpi-file-info" for="elgfilepicker" id="fileLabel">no file...</label>
-				<label class="sdpi-file-label" for="elgfilepicker">Choose file...</label>
-			</div>
-		</div>
+        <div class="sdpi-item" id="my_private_file_selector">
+            <div class="sdpi-item-label">Select File</div>
+            <div class="sdpi-item-group file" id="filepickergroup">
+                <input class="sdpi-item-value" type="file" id="elgfilepicker" accept=".csproj">
+                <label class="sdpi-file-info" for="elgfilepicker" id="fileLabel">no file...</label>
+                <label class="sdpi-file-label" for="elgfilepicker">Choose file...</label>
+            </div>
+        </div>
 
-	</div>
-	<script src="js/property_inspector.js"></script>
-	<script type="text/javascript">
+    </div>
+    <script src="js/property_inspector.js"></script>
+    <script type="text/javascript">
 
-		(function () {
+        (function () {
 
-			var fileLabel = document.getElementById("fileLabel");
+            var fileLabel = document.getElementById("fileLabel");
 
-			var fileSelectorClick = function () {
+            var fileSelectorClick = function () {
 
-				var name = decodeURIComponent(event.target.value.replace(/^C:\\fakepath\\/, ''));
-				fileLabel.innerText = name.replace(/^.*[\\\/]/, '');
+                var name = decodeURIComponent(event.target.value.replace(/^C:\\fakepath\\/, ''));
+                fileLabel.innerText = name.replace(/^.*[\\\/]/, '');
                 sendValueToPlugin(name, 'ProjectFileName');
 
-			};
-			document.getElementById("elgfilepicker").addEventListener('change', fileSelectorClick);
+            };
+            document.getElementById("elgfilepicker").addEventListener('change', fileSelectorClick);
 
-			//onmessage = function (ev) {
-			//	var name = JSON.parse(ev.data).payload.settingsModel.ProjectName;
-			//	fileLabel.innerText = name.replace(/^.*[\\\/]/, '');
-			//}
-
-
-		}());
+            //onmessage = function (ev) {
+            //	var name = JSON.parse(ev.data).payload.settingsModel.ProjectName;
+            //	fileLabel.innerText = name.replace(/^.*[\\\/]/, '');
+            //}
 
 
-	</script>
+        }());
+
+
+    </script>
 </body>
 </html>
