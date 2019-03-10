@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Fritz.StreamDeckDashboard.Models;
+using Microsoft.Extensions.Logging;
 using StreamDeckLib;
 using StreamDeckLib.Messages;
 using System;
@@ -6,44 +7,43 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace Fritz.StreamDeckDashboard
 {
-	
-	[ActionUuid("com.csharpfritz.plugin.unittest.action")]
-	internal class UnitTestAction : BaseStreamDeckAction
-	{
 
-		// Cheer 100 Auth0bobby  January 29, 2019
-		// Cheer 100 roberttables  January 29, 2019
-		// Cheer 100 cpayette  January 29, 2019
-		// Cheer 100 devlead 19/2/19 
+    [ActionUuid("com.csharpfritz.plugin.unittest.action")]
+    internal class UnitTestAction : BaseStreamDeckActionWithSettingsModel<UnitTestSettingsModel>
+    {
 
-		public enum UnitTestButtonState {
-			NoTestsRunning,
-			TestsRunning,
-			TestsPassed,
-			TestsPassedWithWarnings,
-			TestsFailed
-		}
+        // Cheer 100 Auth0bobby  January 29, 2019
+        // Cheer 100 roberttables  January 29, 2019
+        // Cheer 100 cpayette  January 29, 2019
+        // Cheer 100 devlead 19/2/19 
 
-		private Stopwatch _ButtonHoldTimer;
-		private Process _UnitTestProcess;
-		private static readonly Regex _GetDigits = new Regex(@"(\d+)");
+        public enum UnitTestButtonState
+        {
+            NoTestsRunning,
+            TestsRunning,
+            TestsPassed,
+            TestsPassedWithWarnings,
+            TestsFailed
+        }
 
-		~UnitTestAction() {
+        private Stopwatch _ButtonHoldTimer;
+        private Process _UnitTestProcess;
+        private string _Context;
+        private static readonly Regex _GetDigits = new Regex(@"(\d+)");
 
-			Logger.LogDebug("Disposing the Unit Test Action");
+        ~UnitTestAction()
+        {
 
-			if (_UnitTestProcess != null) _UnitTestProcess.Dispose();
+            Logger.LogDebug("Disposing the Unit Test Action");
 
-		}
+            if (_UnitTestProcess != null) _UnitTestProcess.Dispose();
 
-		private string _Context;
-		private string _ProjectFileName;
+        }
 
-		/**
+        /**
 		 * 
 		 * Not Running -- Unit Test Button
 		 * Currently Running
@@ -52,193 +52,199 @@ namespace Fritz.StreamDeckDashboard
 		 * Red button with big X -- failure
 		 */
 
-		public UnitTestButtonState State { get; set; }
+        public UnitTestButtonState State { get; set; }
 
-		public override async Task OnKeyUp(StreamDeckEventPayload args)
-		{
+        public override async Task OnKeyUp(StreamDeckEventPayload args)
+        {
 
-			var ellapsedSeconds = _ButtonHoldTimer != null ? _ButtonHoldTimer.Elapsed.TotalSeconds : 0;
-			_ButtonHoldTimer?.Reset();
+            var ellapsedSeconds = _ButtonHoldTimer != null ? _ButtonHoldTimer.Elapsed.TotalSeconds : 0;
+            _ButtonHoldTimer?.Reset();
 
-			if (State != UnitTestButtonState.NoTestsRunning && ellapsedSeconds > 2)
-			{
-				await StopTests();
-				return;
-			} else if (State == UnitTestButtonState.NoTestsRunning) {
-				await StartTests(args);
-				return;
-			}
+            if (State != UnitTestButtonState.NoTestsRunning && ellapsedSeconds > 2)
+            {
+                await StopTestsAsync();
+                return;
+            }
+            else if (State == UnitTestButtonState.NoTestsRunning)
+            {
+                await StartTests(args);
+                return;
+            }
 
-			// TODO:  Figure out what to do in each of the other states...
-			// NOTE: If tests have completed, perhaps open a report of those tests
+            // TODO:  Figure out what to do in each of the other states...
+            // NOTE: If tests have completed, perhaps open a report of those tests
 
-		}
+        }
 
-		public override Task OnKeyDown(StreamDeckEventPayload args)
-		{
+        public override Task OnKeyDown(StreamDeckEventPayload args)
+        {
 
-			Logger.LogInformation($"Unit test pressed: context({args.context})");
+            Logger.LogInformation($"Unit test pressed: context({args.context})");
 
-			if (State != UnitTestButtonState.NoTestsRunning) {
-				_ButtonHoldTimer = Stopwatch.StartNew();
-			}
+            if (State != UnitTestButtonState.NoTestsRunning)
+            {
+                _ButtonHoldTimer = Stopwatch.StartNew();
+            }
 
-			return Task.CompletedTask;
+            return Task.CompletedTask;
 
-		}
+        }
 
-		public override async Task OnWillDisappear(StreamDeckEventPayload args)
-		{
+        //public override async Task OnWillDisappear(StreamDeckEventPayload args)
+        //{
 
-			// These values persist with the class scope fields
+        //	// These values persist with the class scope fields
 
-			//var currentState = new UnitTestSettings
-			//{
-			//	State = this.State,
-			//	ProjectFileName = _ProjectFileName
-			//};
+        //	//var currentState = new UnitTestSettings
+        //	//{
+        //	//	State = this.State,
+        //	//	ProjectFileName = _ProjectFileName
+        //	//};
 
-			//await this.Manager.SetSettingsAsync(args.context, currentState);
+        //	//await this.Manager.SetSettingsAsync(args.context, currentState);
 
-		}
+        //}
 
-		public override Task OnWillAppear(StreamDeckEventPayload args)
-		{
+        public override Task OnWillAppear(StreamDeckEventPayload args)
+        {
 
-			this._Context = args.context;
+            this._Context = args.context;
 
-			//this.State = args.GetPayloadSettingsValue<UnitTestButtonState>("State");
-			//this._ProjectFileName = args.GetPayloadSettingsValue<string>("ProjectFileName");
+            //	//this.State = args.GetPayloadSettingsValue<UnitTestButtonState>("State");
+            //	//this._ProjectFileName = args.GetPayloadSettingsValue<string>("ProjectFileName");
 
-			return base.OnWillAppear(args);
-		}
+            return base.OnWillAppear(args);
+        }
 
-		public override Task OnPropertyInspectorConnected(PropertyInspectorEventPayload args)
-		{
+        //public override Task OnPropertyInspectorConnected(PropertyInspectorEventPayload args)
+        //{
 
-			Manager.SendToPropertyInspectorAsync(args.context, new { ProjectName = _ProjectFileName });
+        //	Manager.SendToPropertyInspectorAsync(args.context, new { ProjectName = _ProjectFileName });
 
-			return base.OnPropertyInspectorConnected(args);
-		}
+        //	return base.OnPropertyInspectorConnected(args);
+        //}
 
-		public override Task OnPropertyInspectorMessageReceived(PropertyInspectorEventPayload args)
-		{
+        //public override Task OnPropertyInspectorMessageReceived(PropertyInspectorEventPayload args)
+        //{
 
-			// Cheer 100 pharewings 22/2/19 
-			// Cheer 200 cpayette 22/2/19 
-			// Cheer 900 cpayette 24/2/19 
-			// Cheer 100 gep13 24/2/19 
-			// Cheer 100 phrakberg 24/2/19 
-			// Cheer 100 lannonbr 24/2/19 
+        //	// Cheer 100 pharewings 22/2/19 
+        //	// Cheer 200 cpayette 22/2/19 
+        //	// Cheer 900 cpayette 24/2/19 
+        //	// Cheer 100 gep13 24/2/19 
+        //	// Cheer 100 phrakberg 24/2/19 
+        //	// Cheer 100 lannonbr 24/2/19 
 
-			_ProjectFileName = args.GetSettingsPayloadValue<string>("test_project_file");
-			return Task.CompletedTask;
+        //	_ProjectFileName = args.GetSettingsPayloadValue<string>("test_project_file");
+        //	return Task.CompletedTask;
 
-		}
+        //}
 
-		private Task StartTests(StreamDeckEventPayload args)
-		{
+        private Task StartTests(StreamDeckEventPayload args)
+        {
 
-			// Cheer 1000 themichaeljolley 24/2/19 
-			// Cheer 100 ElectricHavoc 24/2/19 
+            // Cheer 1000 themichaeljolley 24/2/19 
+            // Cheer 100 ElectricHavoc 24/2/19 
 
-			if (string.IsNullOrEmpty(_ProjectFileName)) Manager.ShowAlertAsync(args.context);
-
-
-			var projectFolder = new FileInfo(_ProjectFileName).DirectoryName;
-
-			_UnitTestProcess = new Process()
-			{
-				StartInfo = new ProcessStartInfo
-				{
-					WorkingDirectory = projectFolder,
-					UseShellExecute = false,
-					RedirectStandardOutput = true,
-					FileName = "dotnet",
-					Arguments = "watch test"
-				}
-			};
+            if (string.IsNullOrEmpty(SettingsModel.ProjectFileName)) Manager.ShowAlertAsync(args.context);
 
 
-			//_UnitTestProcess.WaitForExit();
-			_UnitTestProcess.Disposed += _UnitTestProcess_Disposed;
-			_UnitTestProcess.OutputDataReceived += _UnitTestProcess_OutputDataReceived;
-			_UnitTestProcess.ErrorDataReceived += _UnitTestProcess_ErrorDataReceived;
-			_UnitTestProcess.Exited += _UnitTestProcess_Exited;
+            var projectFolder = new FileInfo(SettingsModel.ProjectFileName).DirectoryName;
 
-			Logger.LogDebug("Beginning Unit Tests");
+            _UnitTestProcess = new Process()
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    WorkingDirectory = projectFolder,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    FileName = "dotnet",
+                    Arguments = "watch test"
+                }
+            };
 
-			_UnitTestProcess.Start();
 
-			_UnitTestProcess.BeginOutputReadLine();
-			State = UnitTestButtonState.TestsRunning;
+            //_UnitTestProcess.WaitForExit();
+            _UnitTestProcess.Disposed += _UnitTestProcess_Disposed;
+            _UnitTestProcess.OutputDataReceived += _UnitTestProcess_OutputDataReceivedAsync;
+            _UnitTestProcess.ErrorDataReceived += _UnitTestProcess_ErrorDataReceived;
+            _UnitTestProcess.Exited += _UnitTestProcess_Exited;
 
-			return Task.CompletedTask;
+            Logger.LogDebug("Beginning Unit Tests");
 
-		}
+            _UnitTestProcess.Start();
 
-		private void _UnitTestProcess_Disposed(object sender, EventArgs e)
-		{
-			Debug.WriteLine("Process Disposed");
-		}
+            _UnitTestProcess.BeginOutputReadLine();
+            State = UnitTestButtonState.TestsRunning;
 
-		private void _UnitTestProcess_Exited(object sender, EventArgs e)
-		{
-			Debug.WriteLine("Process exited");
-		}
+            return Task.CompletedTask;
 
-		private void _UnitTestProcess_ErrorDataReceived(object sender, DataReceivedEventArgs e)
-		{
-			Debug.WriteLine("Error: " + e.Data);
-		}
+        }
 
-		private void _UnitTestProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
-		{
+        private void _UnitTestProcess_Disposed(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Process Disposed");
+        }
 
-			// Cheer 200 roberttables 19/2/19 
+        private void _UnitTestProcess_Exited(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Process exited");
+        }
 
-			if (e.Data.Contains("watch : Started")) {
-				State = UnitTestButtonState.TestsRunning;
-				Manager.SetImageAsync(_Context, "images/TestRunning.png");
-				Manager.SetTitleAsync(_Context, "");
-			}
-			else if (e.Data.StartsWith("Total tests:")) {
+        private void _UnitTestProcess_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            Debug.WriteLine("Error: " + e.Data);
+        }
 
-				SetButtonFromTestResults(e.Data);
+        private async void _UnitTestProcess_OutputDataReceivedAsync(object sender, DataReceivedEventArgs e)
+        {
 
-			}
+            // Cheer 200 roberttables 19/2/19 
 
-			Debug.WriteLine("Data: " + e.Data);
-		}
+            if (e.Data.Contains("watch : Started"))
+            {
+                State = UnitTestButtonState.TestsRunning;
+                await Manager.SetImageAsync(_Context, "images/TestRunning.png");
+                await Manager.SetTitleAsync(_Context, "");
+            }
+            else if (e.Data.StartsWith("Total tests:"))
+            {
 
-		private void SetButtonFromTestResults(string data)
-		{
-			var results = _GetDigits.Matches(data);
-			var newTitle = $"Passed: {results[1].Value}\nFailed: {results[2].Value}";
-			Manager.SetTitleAsync(_Context, newTitle);
+                await SetButtonFromTestResultsAsync(e.Data);
 
-			var newImage = results[2].Value == "0" && results[3].Value == "0" ? "images/Test-Successful.png" : results[2].Value != "0" ? "images/Test-Failed.png" : "images/Test-Warning.png";
+            }
 
-			Manager.SetImageAsync(_Context, newImage);
+            Debug.WriteLine("Data: " + e.Data);
+        }
 
-		}
+        private async Task SetButtonFromTestResultsAsync(string data)
+        {
+            var results = _GetDigits.Matches(data);
+            var newTitle = $"Passed: {results[1].Value}\nFailed: {results[2].Value}";
+            await Manager.SetTitleAsync(_Context, newTitle);
 
-		private Task StopTests()
-		{
-			_UnitTestProcess.Kill();
-			State = UnitTestButtonState.NoTestsRunning;
-			Manager.SetTitleAsync(_Context, "");
-			Manager.SetImageAsync(_Context, "images/UnitTest.png");
-			return Task.CompletedTask;
-		}
+            var newImage = results[2].Value == "0" && results[3].Value == "0" ? "images/Test-Successful.png" : results[2].Value != "0" ? "images/Test-Failed.png" : "images/Test-Warning.png";
 
-		public class UnitTestSettings {
+            await Manager.SetImageAsync(_Context, newImage);
+            State = UnitTestButtonState.NoTestsRunning;
+        }
 
-			public UnitTestButtonState State { get; set; }
+        private async Task StopTestsAsync()
+        {
+            _UnitTestProcess.Kill();
+            State = UnitTestButtonState.NoTestsRunning;
+            await Manager.SetTitleAsync(_Context, "");
+            await Manager.SetImageAsync(_Context, "images/UnitTest.png");
+            //return Task.CompletedTask;
+        }
 
-			public string ProjectFileName { get; set; }
+        public class UnitTestSettings
+        {
 
-		}
+            public UnitTestButtonState State { get; set; }
 
-	}
+            public string ProjectFileName { get; set; }
+
+        }
+
+    }
 }
