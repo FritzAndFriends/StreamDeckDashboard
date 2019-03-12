@@ -23,6 +23,7 @@ namespace Fritz.StreamDeckDashboard
 		public enum UnitTestButtonState
 		{
 			NoTestsRunning,
+			TestsWatching,
 			TestsRunning,
 			TestsPassed,
 			TestsPassedWithWarnings,
@@ -52,11 +53,27 @@ namespace Fritz.StreamDeckDashboard
  * Red button with big X -- failure
  */
 
+		// Cheer 242 cpayette 12/3/19 
+
+		public string ProjectTitle {
+			get
+			{
+				if (string.IsNullOrEmpty(SettingsModel.ProjectName)) return "";
+
+				return SettingsModel.ProjectName.Length <= 11 ? SettingsModel.ProjectName :
+					$"{SettingsModel.ProjectName.Substring(0, 4)}\u2026{SettingsModel.ProjectName.Substring(SettingsModel.ProjectName.Length-4)}";
+
+			}
+		}
+
 		public override async Task OnKeyUp(StreamDeckEventPayload args)
 		{
 
 			var elapsedSeconds = _ButtonHoldTimer != null ? _ButtonHoldTimer.Elapsed.TotalSeconds : 0;
 			_ButtonHoldTimer?.Reset();
+
+			// Cheer 142 cpayette 12/3/19 
+			// Cheer 142 roberttables 12/3/19 
 
 			if (elapsedSeconds > 2)
 			{
@@ -117,6 +134,9 @@ namespace Fritz.StreamDeckDashboard
 			if (_UnitTestProcess != null)
 			{
 				return SetButtonFromTestResultsAsync(SettingsModel.PassedTestCount, SettingsModel.FailedTestCount, SettingsModel.IgnoredTestCount);
+			} else if (!string.IsNullOrEmpty(SettingsModel.ProjectName))
+			{
+				return Manager.SetTitleAsync(_Context, ProjectTitle + "\nStopped");
 			} else
 			{
 				return Task.CompletedTask;
@@ -134,7 +154,7 @@ namespace Fritz.StreamDeckDashboard
 		public override Task OnDidReceiveSettings(StreamDeckEventPayload args)
 		{
 			base.OnDidReceiveSettings(args);
-			return SetTitleAsync(SettingsModel.ProjectName, 0, 0);
+			return SetTitleAsync(ProjectTitle, 0, 0);
 		}
 
 		private Task StartTests(StreamDeckEventPayload args)
@@ -170,6 +190,7 @@ namespace Fritz.StreamDeckDashboard
 			Logger.LogDebug("Beginning Unit Tests");
 
 			_UnitTestProcess.Start();
+			Manager.SetTitleAsync(_Context, ProjectTitle + "\nRunning");
 
 			_UnitTestProcess.BeginOutputReadLine();
 			SettingsModel.State = UnitTestButtonState.TestsRunning;
@@ -202,7 +223,7 @@ namespace Fritz.StreamDeckDashboard
 			{
 				SettingsModel.State = UnitTestButtonState.TestsRunning;
 				await Manager.SetImageAsync(_Context, "images/TestRunning.png");
-				await Manager.SetTitleAsync(_Context, "");
+				await Manager.SetTitleAsync(_Context, ProjectTitle + "\nRunning");
 			}
 			else if (e.Data.StartsWith("Total tests:"))
 			{
@@ -227,8 +248,9 @@ namespace Fritz.StreamDeckDashboard
 			// Cheer 502 roberttables 10/3/19 
 			// Cheer 200 devlead 10/3/19 
 			// Cheer 342 roberttables 10/3/19 
+			// Cheer 10 electrichavoc 12/3/19 
 
-			await SetTitleAsync(SettingsModel.ProjectName, passedTestCount, failedTestCount);
+			await SetTitleAsync(ProjectTitle, passedTestCount, failedTestCount);
 
 			SettingsModel.PassedTestCount = passedTestCount;
 			SettingsModel.FailedTestCount = failedTestCount;
@@ -237,7 +259,7 @@ namespace Fritz.StreamDeckDashboard
 			var newImage = failedTestCount == 0 && ignoredTestCount == 0 ? "images/Test-Successful.png" : failedTestCount != 0 ? "images/Test-Failed.png" : "images/Test-Warning.png";
 
 			await Manager.SetImageAsync(_Context, newImage);
-			SettingsModel.State = UnitTestButtonState.NoTestsRunning;
+			SettingsModel.State = UnitTestButtonState.TestsWatching;
 		}
 
 		private async Task SetTitleAsync(string projectName, int passedTestCount, int failedTestCount)
@@ -253,7 +275,7 @@ namespace Fritz.StreamDeckDashboard
 		{
 			_UnitTestProcess.Kill();
 			SettingsModel. State = UnitTestButtonState.NoTestsRunning;
-			await Manager.SetTitleAsync(_Context, "");
+			await Manager.SetTitleAsync(_Context, ProjectTitle + "\nStopped");
 			await Manager.SetImageAsync(_Context, "images/UnitTest.png");
 			//return Task.CompletedTask;
 		}
