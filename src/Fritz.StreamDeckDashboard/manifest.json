@@ -14,15 +14,32 @@
 			"SupportedInMultiActions": false,
 			"Tooltip": "Run and monitor unit tests for a project",
 			"UUID": "com.csharpfritz.plugin.unittest.action"
+		},
+		{
+			"Icon": "images/UnitTest",
+			"Name": "Azure DevOps Status",
+			"States": [
+				{
+					"Image": "images/UnitTest",
+					"TitleAlignment": "middle",
+					"FontSize": "9"
+				}
+			],
+			"PropertyInspectorPath": "property_inspector/azureDevopsStatus.html",
+			"SupportedInMultiActions": false,
+			"Tooltip": "Monitor Azure DevOps Build Status",
+			"UUID": "com.csharpfritz.plugin.azuredevopsstatus.action"
 		}
+
 	],
 	"Author": "Fritz and Friends",
+	"Category": "Developer Tools",
 	"CodePathWin": "Fritz.StreamDeckDashboard.cmd",
 	"CodePathMac": "Fritz.StreamDeckDashboard",
 	"Description": "A collection of actions that will make .NET Developers more productive",
 	"Name": "Developer Auxiliary Dashboard",
 	"Icon": "pluginIcon",
-	"URL": "https://www.elgato.com/gaming/stream-deck",
+	"URL": "https://github.com/FritzAndFriends/StreamDeckDashboard",
   "Version": "1.0",
   "SDKVersion": 2,
   "Software": {

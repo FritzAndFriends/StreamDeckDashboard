@@ -20,6 +20,7 @@
      <None Remove="images\Test-Warning.png" />
      <None Remove="images\TestRunning.png" />
      <None Remove="images\UnitTest.png" />
+     <None Remove="property_inspector\azureDevopsStatus.html" />
      <None Remove="property_inspector\css\property-inspector.css" />
      <None Remove="property_inspector\css\sdpi.css" />
      <None Remove="property_inspector\js\property_inspector.js" />
@@ -80,6 +81,9 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
       <Content Include="property_inspector\css\sdpi.css">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="property_inspector\azureDevopsStatus.html">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
       <Content Include="property_inspector\unittest.html">
